@@ -51,7 +51,10 @@ public class SlipLayout extends FrameLayout implements AbsListView.OnScrollListe
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        mTargetViewHeight = mTargetView.getMeasuredHeight();
+        if (mTargetView != null && mTargetViewHeight <= 0) {
+            mTargetViewHeight = mTargetView.getHeight();
+        }
+
     }
 
     protected int mBottomMargin = 0;
@@ -59,6 +62,9 @@ public class SlipLayout extends FrameLayout implements AbsListView.OnScrollListe
     protected int mLastScrollY = 0;
 
     protected void deliverScrollY(int scrollY) {
+        if (mTargetView == null) {
+            return;
+        }
         if (mLastScrollY == 0) {
             mLastScrollY = scrollY;
         }
@@ -67,7 +73,6 @@ public class SlipLayout extends FrameLayout implements AbsListView.OnScrollListe
 
         mLastScrollY = scrollY;
 
-//        Log.e("jsp", "amountOfScrollY = " + amountOfScrollY);
         calculateAndElevateLayout(amountOfScrollY);
     }
 
@@ -97,10 +102,11 @@ public class SlipLayout extends FrameLayout implements AbsListView.OnScrollListe
             }
         }
 
-        Log.e("jsp", "mBottomMargin = " + mBottomMargin);
-        LayoutParams params = (LayoutParams) mTargetView.getLayoutParams();
-        params.bottomMargin = mBottomMargin;
-        mTargetView.setLayoutParams(params);
+        if (mTargetView != null) {
+            MarginLayoutParams params = (MarginLayoutParams) mTargetView.getLayoutParams();
+            params.bottomMargin = mBottomMargin;
+            mTargetView.setLayoutParams(params);
+        }
     }
 
     @Override
