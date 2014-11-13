@@ -1,22 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<com.tonyjs.sliplayout.lib.SlipLayout
+<FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/slip_layout"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-    <ListView
-            android:id="@+id/list_view"
+    <FrameLayout
+            android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-    <View
+    <LinearLayout
             android:id="@+id/v_target"
+            android:padding="8dp"
+            android:orientation="horizontal"
             android:layout_gravity="bottom"
             android:background="#456575"
             android:layout_width="match_parent"
-            android:layout_height="56dp"/>
+            android:layout_height="56dp">
 
-</com.tonyjs.sliplayout.lib.SlipLayout>
+        <Button
+                android:id="@+id/btn_list"
+                android:background="#bbbbbb"
+                android:text="ListView"
+                android:textAllCaps="false"
+                android:textColor="#456575"
+                android:onClick="onClick"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"/>
+        <Button
+                android:id="@+id/btn_recycler"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="8dp"
+                android:background="#bbbbbb"
+                android:text="RecyclerView"
+                android:textAllCaps="false"
+                android:textColor="#456575"
+                android:onClick="onClick"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"/>
+        <Button
+                android:id="@+id/btn_scroll"
+                android:background="#bbbbbb"
+                android:text="ScrollView"
+                android:textAllCaps="false"
+                android:textColor="#456575"
+                android:onClick="onClick"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"/>
+
+    </LinearLayout>
+</FrameLayout>
