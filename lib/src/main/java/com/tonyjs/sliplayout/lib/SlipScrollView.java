@@ -39,38 +39,46 @@ public class SlipScrollView extends ScrollView {
         mOnScrollListener = onScrollListener;
     }
 
-    float mLastX;
-    float mLastY;
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        int action = ev.getAction();
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                mLastX = ev.getX();
-                mLastY = ev.getY();
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                float x = ev.getX();
-                float y = ev.getY();
-//                float distanceX = Math.abs(x - mLastX);
-                float distanceY = y - mLastY;
-//                float absDistanceY = Math.abs(distanceY);
-//                Log.e(((Object) this).getClass().getSimpleName(), "distanceY =" + distanceY);
-                if (mOnScrollListener != null) {
-                    mOnScrollListener.onScroll((int) distanceY);
-                }
-                mLastX = x;
-                mLastY = y;
-                break;
-
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-                mLastX = 0;
-                mLastY = 0;
-                break;
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+        super.onScrollChanged(l, t, oldl, oldt);
+        int distance = oldt - t;
+        if (mOnScrollListener != null) {
+            mOnScrollListener.onScroll(distance);
         }
-        return super.onTouchEvent(ev);
     }
+//    float mLastX;
+//    float mLastY;
+//    @Override
+//    public boolean onTouchEvent(MotionEvent ev) {
+//        int action = ev.getAction();
+//        switch (action) {
+//            case MotionEvent.ACTION_DOWN:
+//                mLastX = ev.getX();
+//                mLastY = ev.getY();
+//                break;
+//
+//            case MotionEvent.ACTION_MOVE:
+//                float x = ev.getX();
+//                float y = ev.getY();
+////                float distanceX = Math.abs(x - mLastX);
+//                float distanceY = y - mLastY;
+////                float absDistanceY = Math.abs(distanceY);
+////                Log.e(((Object) this).getClass().getSimpleName(), "distanceY =" + distanceY);
+//                if (mOnScrollListener != null) {
+//                    mOnScrollListener.onScroll((int) distanceY);
+//                }
+//                mLastX = x;
+//                mLastY = y;
+//                break;
+//
+//            case MotionEvent.ACTION_UP:
+//            case MotionEvent.ACTION_CANCEL:
+//                mLastX = 0;
+//                mLastY = 0;
+//                break;
+//        }
+//        return super.onTouchEvent(ev);
+//    }
 
 }
