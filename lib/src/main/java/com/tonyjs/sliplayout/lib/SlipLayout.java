@@ -13,6 +13,10 @@ import android.widget.ListView;
  */
 public class SlipLayout extends FrameLayout
         implements AbsListView.OnScrollListener, SlipScrollView.OnScrollListener {
+
+    public static final int DIRECTION_TO_UP = 0;
+    public static final int DIRECTION_TO_BOTTOM = 1;
+
     public static final int DEFAULT_SPARE = 10;
     public SlipLayout(Context context) {
         super(context);
@@ -29,9 +33,22 @@ public class SlipLayout extends FrameLayout
         init();
     }
 
-    int mSpare;
+    private int mSpare;
     private void init() {
         mSpare = (int) (DEFAULT_SPARE * getContext().getResources().getDisplayMetrics().density);
+    }
+
+    private int mDirection = DIRECTION_TO_BOTTOM;
+
+    public void setDirection(int direction) {
+        if (direction != DIRECTION_TO_UP || direction != DIRECTION_TO_BOTTOM) {
+            try {
+                throw new Exception("direction must to be DIRECTION__TO_UP or DIRECTION_TO_BOTTOM");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        mDirection = direction;
     }
 
     protected SlipScrollView mScrollView;
@@ -98,7 +115,7 @@ public class SlipLayout extends FrameLayout
         deliverScrollY(scroll);
     }
 
-    protected int mBottomMargin = 0;
+    protected int mMargin = 0;
     protected int mLastScrollY = 0;
 
     protected void deliverScrollY(int scrollY) {
@@ -121,33 +138,34 @@ public class SlipLayout extends FrameLayout
             return;
         }
 
-//        Log.e("jsp", "amountOfScrollY - " + amountOfScrollY);
-//        Log.d("jsp", "mTargetViewHeight - " + mTargetViewHeight);
         if (Math.abs(amountOfScrollY) >= mTargetViewHeight) {
             if (amountOfScrollY > 0) {
-                mBottomMargin = 0;
+                mMargin = 0;
             } else {
-                mBottomMargin = -mTargetViewHeight;
+                mMargin = -mTargetViewHeight;
             }
         } else {
-            mBottomMargin = mBottomMargin + amountOfScrollY;
-            if (Math.abs(mBottomMargin) >= mTargetViewHeight) {
-                if (mBottomMargin > 0) {
-                    mBottomMargin = 0;
+            mMargin = mMargin + amountOfScrollY;
+            if (Math.abs(mMargin) >= mTargetViewHeight) {
+                if (mMargin > 0) {
+                    mMargin = 0;
                 } else {
-                    mBottomMargin = -mTargetViewHeight;
+                    mMargin = -mTargetViewHeight;
                 }
             } else {
-                if (mBottomMargin > 0) {
-                    mBottomMargin = 0;
+                if (mMargin > 0) {
+                    mMargin = 0;
                 }
             }
         }
 
         if (mTargetView != null) {
-//            Log.i(((Object) this).getClass().getSimpleName(), "mBottomMargin = " + mBottomMargin);
             MarginLayoutParams params = (MarginLayoutParams) mTargetView.getLayoutParams();
-            params.bottomMargin = mBottomMargin;
+            if (mDirection == DIRECTION_TO_BOTTOM) {
+                params.bottomMargin = mMargin;
+            } else {
+                params.topMargin = mMargin;
+            }
             mTargetView.setLayoutParams(params);
         }
     }

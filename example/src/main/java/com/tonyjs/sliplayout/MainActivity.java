@@ -1,20 +1,14 @@
 package com.tonyjs.sliplayout;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import com.tonyjs.sliplayout.fragment.FragmentList;
 import com.tonyjs.sliplayout.fragment.FragmentRecycler;
 import com.tonyjs.sliplayout.fragment.FragmentScroll;
 import com.tonyjs.sliplayout.fragment.SlipLayoutFragment;
 import com.tonyjs.sliplayout.lib.SlipLayout;
-
-import java.util.ArrayList;
 
 /**
  * Created by im026 on 2014. 9. 19..
