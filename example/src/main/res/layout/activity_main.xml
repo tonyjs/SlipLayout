@@ -51,4 +51,15 @@
                 android:layout_height="match_parent"/>
 
     </LinearLayout>
+
+    <Button
+            android:id="@+id/btn_to_with_toolbar_activity"
+            android:text="GoWithToolbarActivity"
+            android:textAllCaps="false"
+            android:layout_marginRight="8dp"
+            android:layout_gravity="right"
+            android:onClick="onClick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
 </FrameLayout>

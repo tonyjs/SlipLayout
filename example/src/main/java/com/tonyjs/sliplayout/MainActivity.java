@@ -48,6 +48,8 @@ public class MainActivity extends ActionBarActivity
             case R.id.btn_scroll:
                 replace(Type.SCROLL);
                 break;
+            case R.id.btn_to_with_toolbar_activity:
+                break;
         }
     }
 

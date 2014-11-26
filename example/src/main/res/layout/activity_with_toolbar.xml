@@ -1,0 +1,43 @@
+<com.tonyjs.sliplayout.lib.SlipLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/slip_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.tonyjs.sliplayout.WithToolbarActivity">
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <com.tonyjs.sliplayout.lib.SlipScrollView
+                android:id="@+id/scroll_view"
+                android:clipToPadding="false"
+                android:paddingTop="244dp"
+                android:fillViewport="true"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            <TextView
+                    android:text="@string/data"
+                    android:padding="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+        </com.tonyjs.sliplayout.lib.SlipScrollView>
+
+        <View
+                android:id="@+id/view"
+                android:layout_below="@+id/toolbar"
+                android:background="#c9f7e8"
+                android:layout_width="match_parent"
+                android:layout_height="188dp"/>
+
+        <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:background="#f04855"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"/>
+
+
+    </RelativeLayout>
+</com.tonyjs.sliplayout.lib.SlipLayout>
