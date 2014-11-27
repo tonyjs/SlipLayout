@@ -4,32 +4,47 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
+import android.widget.ListView;
 import com.tonyjs.sliplayout.fragment.FragmentList;
 import com.tonyjs.sliplayout.fragment.FragmentRecycler;
 import com.tonyjs.sliplayout.fragment.FragmentScroll;
 import com.tonyjs.sliplayout.fragment.SlipLayoutFragment;
 import com.tonyjs.sliplayout.lib.SlipLayout;
+import com.tonyjs.sliplayout.lib.SlipLayoutController;
 
 /**
  * Created by im026 on 2014. 9. 19..
  */
 public class MainActivity extends ActionBarActivity
-        implements SlipLayoutFragment.OnSlipLayoutCreatedListener, View.OnClickListener{
+        implements SlipLayoutFragment.OnSlipLayoutCreatedListener,
+                    FragmentList.OnViewCreatedListener,View.OnClickListener{
 
     enum Type {
         LIST, RECYCLER, SCROLL
     }
 
+    private SlipLayoutController mSlipLayoutController;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mSlipLayoutController = new SlipLayoutController(this);
+        mSlipLayoutController.setDirection(SlipLayoutController.DIRECTION_TO_UP);
+        mSlipLayoutController.setTargetView(getTargetView());
         replace(Type.LIST);
     }
 
     @Override
     public void onSlipLayoutCreated(SlipLayout slipLayout) {
+        if (slipLayout == null) {
+            return;
+        }
         slipLayout.setTargetView(getTargetView());
+    }
+
+    @Override
+    public void onViewCreated(ListView listView) {
+        mSlipLayoutController.setListView(listView);
     }
 
     public View getTargetView() {

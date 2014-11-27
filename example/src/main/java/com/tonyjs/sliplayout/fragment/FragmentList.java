@@ -1,5 +1,6 @@
 package com.tonyjs.sliplayout.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -15,23 +16,39 @@ import com.tonyjs.sliplayout.lib.SlipLayout;
  */
 public class FragmentList extends SlipLayoutFragment {
 
-    private SlipLayout mSlipLayout;
+    public interface OnViewCreatedListener{
+        public void onViewCreated(ListView listView);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+
+    private ListView mListView;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_list, container, false);
 
-        ListView listView = (ListView) rootView.findViewById(R.id.list);
-        listView.setAdapter(
+        mListView = (ListView) rootView.findViewById(R.id.list);
+        mListView.setAdapter(
                 new ArrayAdapter<String>(getActivity().getBaseContext(), android.R.layout.simple_list_item_1, DATA));
-
-        mSlipLayout = (SlipLayout) rootView.findViewById(R.id.slip_layout);
-        mSlipLayout.setListView(listView);
 
         return rootView;
     }
 
     @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Activity activity = getActivity();
+        if (activity instanceof OnViewCreatedListener) {
+            ((OnViewCreatedListener) activity).onViewCreated(mListView);
+        }
+    }
+
+    @Override
     public SlipLayout getSlipLayout() {
-        return mSlipLayout;
+        return null;
     }
 }
