@@ -29,7 +29,6 @@ public class MainActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mSlipLayoutController = new SlipLayoutController(this);
-        mSlipLayoutController.setDirection(SlipLayoutController.DIRECTION_TO_UP);
         mSlipLayoutController.setTargetView(getTargetView());
         replace(Type.LIST);
     }
