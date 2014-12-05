@@ -80,13 +80,14 @@ public class SlipScrollView extends ScrollView {
     public void onScrollForcibly(int scroll) {
         for (OnScrollListener callBack : mCallbacks) {
             if (callBack instanceof ScrollCallback) {
-                boolean isOnOriginalPosition =
-                        ((ScrollCallback) callBack).isOnOriginalPosition();
-                if (isOnOriginalPosition) {
-                    break;
-                } else {
-                    callBack.onScroll(scroll);
-                }
+//                boolean isOnOriginalPosition =
+//                        ((ScrollCallback) callBack).isOnOriginalPosition();
+//                if (isOnOriginalPosition) {
+//                    break;
+//                } else {
+//                    callBack.onScroll(scroll);
+//                }
+                callBack.onScroll(scroll);
             } else {
                 callBack.onScroll(scroll);
             }
