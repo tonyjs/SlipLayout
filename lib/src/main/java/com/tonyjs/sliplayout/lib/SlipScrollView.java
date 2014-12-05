@@ -2,8 +2,6 @@ package com.tonyjs.sliplayout.lib;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ScrollView;
 
@@ -19,14 +17,17 @@ public class SlipScrollView extends ScrollView {
 
     public SlipScrollView(Context context) {
         super(context);
+        setOverScrollMode(OVER_SCROLL_NEVER);
     }
 
     public SlipScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setOverScrollMode(OVER_SCROLL_NEVER);
     }
 
     public SlipScrollView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        setOverScrollMode(OVER_SCROLL_NEVER);
     }
 
     private OnScrollListener mOnScrollListener;
@@ -47,57 +48,25 @@ public class SlipScrollView extends ScrollView {
         mCallbacks.clear();
     }
 
-    float mLastX;
-    float mLastY;
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        int action = ev.getAction();
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                mLastX = ev.getX();
-                mLastY = ev.getY();
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                float x = ev.getX();
-                float y = ev.getY();
-                float distanceY = y - mLastY;
-                float absDistanceY = Math.abs(distanceY);
-                if (mOnScrollListener != null) {
-                    mOnScrollListener.onScroll((int) distanceY);
-                }
-
-                if (mCallbacks.size() > 0) {
-                    for (OnScrollListener onScrollListener : mCallbacks) {
-                        onScrollListener.onScroll((int) distanceY);
-                    }
-                }
-                mLastX = x;
-                mLastY = y;
-                break;
-
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-                mLastX = 0;
-                mLastY = 0;
-                break;
-        }
-        return super.onTouchEvent(ev);
-    }
-
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
-        int distance = oldt - t;
-//        if (mOnScrollListener != null) {
-//            mOnScrollListener.onScroll(distance);
-//        }
-//
-//        if (mCallbacks.size() > 0) {
-//            for (OnScrollListener onScrollListener : mCallbacks) {
-//                onScrollListener.onScroll(distance);
-//            }
-//        }
+        int scrollY = getScrollY();
+        if (mOnScrollListener != null) {
+            mOnScrollListener.onScroll(scrollY);
+        }
+        if (mCallbacks.size() > 0) {
+            for (OnScrollListener onScrollListener : mCallbacks) {
+                onScrollListener.onScroll(scrollY);
+            }
+        }
+    }
+
+    private boolean isScrollable() {
+        int height = getHeight();
+        int contentsHeight = getChildAt(0).getHeight();
+        int padding = getPaddingTop() + getPaddingBottom();
+        return height < contentsHeight + padding;
     }
 
     public void showAllTargetView() {
@@ -108,13 +77,30 @@ public class SlipScrollView extends ScrollView {
         }
     }
 
-    public static ScrollCallback getScrollCallback(Context context, View targetView,
-                                                   int slipDistance) {
+    public void onScrollForcibly(int scroll) {
+        for (OnScrollListener callBack : mCallbacks) {
+            if (callBack instanceof ScrollCallback) {
+                boolean isOnOriginalPosition =
+                        ((ScrollCallback) callBack).isOnOriginalPosition();
+                if (isOnOriginalPosition) {
+                    break;
+                } else {
+                    callBack.onScroll(scroll);
+                }
+            } else {
+                callBack.onScroll(scroll);
+            }
+        }
+    }
+
+    public static ScrollCallback getScrollCallback(
+            Context context, View targetView, int slipDistance) {
         return new ScrollCallback(context, targetView, slipDistance);
     }
 
-    public static ScrollCallback getScrollCallback(Context context, View targetView,
-                                                   int slipDistance, ScrollCallback.Direction direction) {
+    public static ScrollCallback getScrollCallback(
+            Context context, View targetView,
+            int slipDistance, ScrollCallback.Direction direction) {
         return new ScrollCallback(context, targetView, slipDistance, direction);
     }
 
@@ -133,7 +119,8 @@ public class SlipScrollView extends ScrollView {
             mSlipDistance = slipDistance;
         }
 
-        public ScrollCallback(Context context, View targetView, int slipDistance, Direction direction) {
+        public ScrollCallback(
+                Context context, View targetView, int slipDistance, Direction direction) {
             mContext = context;
             mTargetView = targetView;
             mSlipDistance = slipDistance;
@@ -142,54 +129,8 @@ public class SlipScrollView extends ScrollView {
 
         @Override
         public void onScroll(int amountOfScroll) {
-            Log.e("jsp", "onScroll - " + amountOfScroll);
-            MarginLayoutParams lp = (MarginLayoutParams) mTargetView.getLayoutParams();
-            int absAmountOfScroll = Math.abs(amountOfScroll);
-            if (absAmountOfScroll <= 2) {
-                return;
-            }
-
-            int margin = mDirection == Direction.UP ? lp.topMargin : lp.bottomMargin;
-
-//            Log.e("jsp", "margin = " + margin);
-//            Log.e("jsp", "mSlipDistance = " + mSlipDistance);
-//            Log.e("jsp", "amountOfScroll = " + amountOfScroll);
-            int newMargin = 0;
-            if (amountOfScroll > 0) {
-                if (absAmountOfScroll >= mSlipDistance) {
-                    newMargin = 0;
-                } else {
-                    if (margin < 0) {
-                        newMargin = margin + amountOfScroll;
-                        if (newMargin >= 0) {
-                            newMargin = 0;
-                        }
-                    } else {
-                        newMargin = 0;
-                    }
-                }
-            } else {
-                if (absAmountOfScroll >= mSlipDistance) {
-                    newMargin = -mSlipDistance;
-                } else {
-                    if (margin > -mSlipDistance) {
-                        newMargin = margin + amountOfScroll;
-                        if (newMargin <= -mSlipDistance) {
-                            newMargin = -mSlipDistance;
-                        }
-                    } else {
-                        newMargin = -mSlipDistance;
-                    }
-                }
-            }
-
-//            Log.e("jsp", "newMargin = " + newMargin);
-            if (mDirection == Direction.UP) {
-                lp.topMargin = newMargin;
-            } else {
-                lp.bottomMargin = newMargin;
-            }
-            mTargetView.setLayoutParams(lp);
+            int newTop = Math.max(-mSlipDistance, -amountOfScroll);
+            mTargetView.setTranslationY(newTop);
         }
 
         public int getPixelFromDp(float dp) {
@@ -197,13 +138,23 @@ public class SlipScrollView extends ScrollView {
         }
 
         public void show() {
-            MarginLayoutParams lp = (MarginLayoutParams) mTargetView.getLayoutParams();
-            if (mDirection == Direction.UP) {
-                lp.topMargin = 0;
-            } else {
-                lp.bottomMargin = 0;
-            }
-            mTargetView.setLayoutParams(lp);
+            mTargetView.setTranslationY(0);
+        }
+
+        public View getTargetView() {
+            return mTargetView;
+        }
+
+        public boolean isOnOriginalPosition(){
+//            MarginLayoutParams lp = (MarginLayoutParams) mTargetView.getLayoutParams();
+//            int margin = lp.topMargin;
+//            if (mDirection == Direction.UP) {
+//                margin = lp.topMargin;
+//            } else {
+//                margin = lp.bottomMargin;
+//            }
+
+            return mTargetView.getTop() == 0;
         }
     }
 }
