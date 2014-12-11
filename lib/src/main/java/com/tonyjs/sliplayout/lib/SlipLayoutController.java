@@ -2,7 +2,6 @@ package com.tonyjs.sliplayout.lib;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -12,7 +11,7 @@ import android.widget.ListView;
  * Created by tony.js on 2014. 9. 17..
  */
 public class SlipLayoutController
-        implements AbsListView.OnScrollListener, SlipScrollView.OnScrollListener {
+        implements AbsListView.OnScrollListener, SlipScrollView.OnScrollCallback {
 
     public static final int DIRECTION_TO_UP = 0;
     public static final int DIRECTION_TO_BOTTOM = 1;
@@ -32,7 +31,7 @@ public class SlipLayoutController
 
     public void setScrollView(SlipScrollView scrollView) {
         mScrollView = scrollView;
-        mScrollView.addOnScrollListener(this);
+        mScrollView.setOnScrollCallback(this);
     }
 
     @Override
@@ -89,64 +88,51 @@ public class SlipLayoutController
             mLastScrollY = scrollY;
         }
 
-        int amountOfScrollY = mLastScrollY - scrollY;
-//        int amountOfScrollY = scrollY - mLastScrollY;
+        int amountOfScrollY = scrollY - mLastScrollY;
 
         mLastScrollY = scrollY;
 
-        calculateAndSlipLayout(amountOfScrollY);
+        calculateAndSlipLayout(-amountOfScrollY);
     }
 
+    protected int mMargin = 0;
     protected void calculateAndSlipLayout(int amountOfScrollY) {
-        Log.e("jsp", "onScroll - " + amountOfScrollY);
-        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mTargetView.getLayoutParams();
-        int absAmountOfScroll = Math.abs(amountOfScrollY);
-        if (absAmountOfScroll <= 2) {
+        if (amountOfScrollY == 0 || mTargetView == null) {
             return;
         }
 
-        int targetViewHeight = mTargetView.getHeight();
-        int margin = mDirection == DIRECTION_TO_UP ? lp.topMargin : lp.bottomMargin;
+        int slipDistance = mTargetView.getHeight();
 
-//            Log.e("jsp", "margin = " + margin);
-//            Log.e("jsp", "mSlipDistance = " + mSlipDistance);
-//            Log.e("jsp", "amountOfScroll = " + amountOfScroll);
-        int newMargin = 0;
-        if (amountOfScrollY > 0) {
-            if (absAmountOfScroll >= targetViewHeight) {
-                newMargin = 0;
+        if (Math.abs(amountOfScrollY) >= slipDistance) {
+            if (amountOfScrollY > 0) {
+                mMargin = 0;
             } else {
-                if (margin < 0) {
-                    newMargin = margin + amountOfScrollY;
-                    if (newMargin >= 0) {
-                        newMargin = 0;
-                    }
-                } else {
-                    newMargin = 0;
-                }
+                mMargin = -slipDistance;
             }
         } else {
-            if (absAmountOfScroll >= targetViewHeight) {
-                newMargin = -targetViewHeight;
-            } else {
-                if (margin > -targetViewHeight) {
-                    newMargin = margin + amountOfScrollY;
-                    if (newMargin <= -targetViewHeight) {
-                        newMargin = -targetViewHeight;
-                    }
+            mMargin = mMargin + amountOfScrollY;
+            if (Math.abs(mMargin) >= slipDistance) {
+                if (mMargin > 0) {
+                    mMargin = 0;
                 } else {
-                    newMargin = -targetViewHeight;
+                    mMargin = -slipDistance;
+                }
+            } else {
+                if (mMargin > 0) {
+                    mMargin = 0;
                 }
             }
         }
 
-//            Log.e("jsp", "newMargin = " + newMargin);
-        if (mDirection == DIRECTION_TO_UP) {
-            lp.topMargin = newMargin;
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) mTargetView.getLayoutParams();
+        if (mDirection == DIRECTION_TO_BOTTOM) {
+            params.bottomMargin = mMargin;
         } else {
-            lp.bottomMargin = newMargin;
+            params.topMargin = mMargin;
         }
-        mTargetView.setLayoutParams(lp);
+
+        mTargetView.setLayoutParams(params);
     }
 
     public void showTargetView() {

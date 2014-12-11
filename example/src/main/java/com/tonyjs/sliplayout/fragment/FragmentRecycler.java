@@ -1,12 +1,15 @@
 package com.tonyjs.sliplayout.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 import com.tonyjs.sliplayout.R;
 import com.tonyjs.sliplayout.lib.SlipLayout;
@@ -14,24 +17,37 @@ import com.tonyjs.sliplayout.lib.SlipLayout;
 /**
  * Created by tony.park on 14. 11. 13..
  */
-public class FragmentRecycler extends SlipLayoutFragment {
+public class FragmentRecycler extends Fragment {
 
-    private SlipLayout mSlipLayout;
+    public static final String[] DATA =
+            ("allin ball calculator dog facebook google hashtagram instagram jake wharton"
+                    + " korea lolipop man nineold orc pushbullet quip recyclerview sliplayout trello"
+                    + " umano vingle wechat xiaomi youtube zxing").split(" ");
+
+    public interface OnViewCreatedListener{
+        public void onViewCreated(RecyclerView recyclerView);
+    }
+
+    private RecyclerView mRecyclerView;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_recycler, container, false);
-        mSlipLayout = (SlipLayout) rootView.findViewById(R.id.slip_layout);
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler);
-        recyclerView.setLayoutManager(
-                new LinearLayoutManager(getActivity().getBaseContext(), LinearLayoutManager.VERTICAL, false));
-        recyclerView.setAdapter(new RecyclerAdapter(inflater, DATA));
-        mSlipLayout.setRecyclerView(recyclerView);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler);
+        mRecyclerView.setLayoutManager(
+                new LinearLayoutManager(
+                        getActivity().getBaseContext(), LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.setAdapter(new RecyclerAdapter(inflater, DATA));
         return rootView;
     }
 
     @Override
-    public SlipLayout getSlipLayout() {
-        return mSlipLayout;
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Activity activity = getActivity();
+        if (activity instanceof OnViewCreatedListener) {
+            ((OnViewCreatedListener) activity).onViewCreated(mRecyclerView);
+        }
     }
 
     private class RecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {

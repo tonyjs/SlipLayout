@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
+import com.tonyjs.sliplayout.lib.MultiSlipScrollView;
 import com.tonyjs.sliplayout.lib.SlipLayout;
 import com.tonyjs.sliplayout.lib.SlipScrollView;
 
@@ -19,10 +22,14 @@ public class WithToolbarActivity extends ActionBarActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        SlipLayout slipLayout = (SlipLayout) findViewById(R.id.slip_layout);
-        slipLayout.setDirection(SlipLayout.DIRECTION_TO_UP);
-        slipLayout.setScrollView((SlipScrollView) findViewById(R.id.scroll_view));
-        slipLayout.setTargetView(toolbar);
+        MultiSlipScrollView scrollView = (MultiSlipScrollView) findViewById(R.id.scroll_view);
+
+        int actionBarSize = (int) (getResources().getDisplayMetrics().density * 56);
+        scrollView.addOnScrollCallback(
+                MultiSlipScrollView.getScrollCallback(this, toolbar, actionBarSize));
+        View emptyView = findViewById(R.id.empty_view);
+        scrollView.addOnScrollCallback(
+                MultiSlipScrollView.getScrollCallback(this, emptyView, actionBarSize));
     }
 
     @Override

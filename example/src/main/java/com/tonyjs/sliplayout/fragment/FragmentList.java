@@ -14,15 +14,15 @@ import com.tonyjs.sliplayout.lib.SlipLayout;
 /**
  * Created by tony.park on 14. 11. 13..
  */
-public class FragmentList extends SlipLayoutFragment {
+public class FragmentList extends Fragment {
+
+    public static final String[] DATA =
+            ("allin ball calculator dog facebook google hashtagram instagram jake wharton"
+                    + " korea lolipop man nineold orc pushbullet quip recyclerview sliplayout trello"
+                    + " umano vingle wechat xiaomi youtube zxing").split(" ");
 
     public interface OnViewCreatedListener{
         public void onViewCreated(ListView listView);
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
     }
 
     private ListView mListView;
@@ -32,7 +32,8 @@ public class FragmentList extends SlipLayoutFragment {
 
         mListView = (ListView) rootView.findViewById(R.id.list);
         mListView.setAdapter(
-                new ArrayAdapter<String>(getActivity().getBaseContext(), android.R.layout.simple_list_item_1, DATA));
+                new ArrayAdapter<String>(
+                        getActivity().getBaseContext(), android.R.layout.simple_list_item_1, DATA));
 
         return rootView;
     }
@@ -47,8 +48,4 @@ public class FragmentList extends SlipLayoutFragment {
         }
     }
 
-    @Override
-    public SlipLayout getSlipLayout() {
-        return null;
-    }
 }

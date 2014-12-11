@@ -1,23 +1,27 @@
 package com.tonyjs.sliplayout;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ListView;
 import com.tonyjs.sliplayout.fragment.FragmentList;
 import com.tonyjs.sliplayout.fragment.FragmentRecycler;
 import com.tonyjs.sliplayout.fragment.FragmentScroll;
-import com.tonyjs.sliplayout.fragment.SlipLayoutFragment;
 import com.tonyjs.sliplayout.lib.SlipLayout;
 import com.tonyjs.sliplayout.lib.SlipLayoutController;
+import com.tonyjs.sliplayout.lib.SlipScrollView;
 
 /**
  * Created by im026 on 2014. 9. 19..
  */
 public class MainActivity extends ActionBarActivity
-        implements SlipLayoutFragment.OnSlipLayoutCreatedListener,
-                    FragmentList.OnViewCreatedListener,View.OnClickListener{
+        implements View.OnClickListener,
+                    FragmentList.OnViewCreatedListener,
+                    FragmentRecycler.OnViewCreatedListener,
+                    FragmentScroll.OnViewCreatedListener{
 
     enum Type {
         LIST, RECYCLER, SCROLL
@@ -34,16 +38,18 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onSlipLayoutCreated(SlipLayout slipLayout) {
-        if (slipLayout == null) {
-            return;
-        }
-        slipLayout.setTargetView(getTargetView());
+    public void onViewCreated(ListView listView) {
+        mSlipLayoutController.setListView(listView);
     }
 
     @Override
-    public void onViewCreated(ListView listView) {
-        mSlipLayoutController.setListView(listView);
+    public void onViewCreated(RecyclerView recyclerView) {
+        mSlipLayoutController.setRecyclerView(recyclerView);
+    }
+
+    @Override
+    public void onViewCreated(SlipScrollView slipScrollView) {
+        mSlipLayoutController.setScrollView(slipScrollView);
     }
 
     public View getTargetView() {
@@ -63,6 +69,7 @@ public class MainActivity extends ActionBarActivity
                 replace(Type.SCROLL);
                 break;
             case R.id.btn_to_with_toolbar_activity:
+                startActivity(new Intent(this, WithToolbarActivity.class));
                 break;
         }
     }

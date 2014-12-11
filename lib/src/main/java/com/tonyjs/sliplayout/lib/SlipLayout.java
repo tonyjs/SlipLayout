@@ -11,8 +11,9 @@ import android.widget.ListView;
 /**
  * Created by tony.js on 2014. 9. 17..
  */
+@Deprecated
 public class SlipLayout extends FrameLayout
-        implements AbsListView.OnScrollListener, SlipScrollView.OnScrollListener {
+        implements AbsListView.OnScrollListener {
 
     public static final int DIRECTION_TO_UP = 0;
     public static final int DIRECTION_TO_BOTTOM = 1;
@@ -49,18 +50,6 @@ public class SlipLayout extends FrameLayout
             }
         }
         mDirection = direction;
-    }
-
-    protected SlipScrollView mScrollView;
-
-    public void setScrollView(SlipScrollView scrollView) {
-        mScrollView = scrollView;
-        mScrollView.setOnScrollListener(this);
-    }
-
-    @Override
-    public void onScroll(int amountOfScroll) {
-        calculateAndSlipLayout(amountOfScroll);
     }
 
     protected ListView mListView;
