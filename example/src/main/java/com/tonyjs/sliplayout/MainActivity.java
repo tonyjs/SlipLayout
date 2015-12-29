@@ -7,10 +7,10 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ListView;
+
 import com.tonyjs.sliplayout.fragment.FragmentList;
 import com.tonyjs.sliplayout.fragment.FragmentRecycler;
 import com.tonyjs.sliplayout.fragment.FragmentScroll;
-import com.tonyjs.sliplayout.lib.SlipLayout;
 import com.tonyjs.sliplayout.lib.SlipLayoutController;
 import com.tonyjs.sliplayout.lib.SlipScrollView;
 
@@ -19,41 +19,35 @@ import com.tonyjs.sliplayout.lib.SlipScrollView;
  */
 public class MainActivity extends ActionBarActivity
         implements View.OnClickListener,
-                    FragmentList.OnViewCreatedListener,
-                    FragmentRecycler.OnViewCreatedListener,
-                    FragmentScroll.OnViewCreatedListener{
-
-    enum Type {
-        LIST, RECYCLER, SCROLL
-    }
+        FragmentList.OnViewCreatedListener,
+        FragmentRecycler.OnViewCreatedListener,
+        FragmentScroll.OnViewCreatedListener {
 
     private SlipLayoutController mSlipLayoutController;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mSlipLayoutController = new SlipLayoutController(this);
-        mSlipLayoutController.setTargetView(getTargetView());
+
+        mSlipLayoutController = new SlipLayoutController(findViewById(R.id.v_target));
+
         replace(Type.LIST);
     }
 
     @Override
     public void onViewCreated(ListView listView) {
-        mSlipLayoutController.setListView(listView);
+        mSlipLayoutController.setScrollableView(listView);
     }
 
     @Override
     public void onViewCreated(RecyclerView recyclerView) {
-        mSlipLayoutController.setRecyclerView(recyclerView);
+        mSlipLayoutController.setScrollableView(recyclerView);
     }
 
     @Override
     public void onViewCreated(SlipScrollView slipScrollView) {
-        mSlipLayoutController.setScrollView(slipScrollView);
-    }
-
-    public View getTargetView() {
-        return findViewById(R.id.v_target);
+        mSlipLayoutController.setScrollableView(slipScrollView);
     }
 
     @Override
@@ -93,5 +87,9 @@ public class MainActivity extends ActionBarActivity
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.container, fragment)
                 .commitAllowingStateLoss();
+    }
+
+    enum Type {
+        LIST, RECYCLER, SCROLL
     }
 }

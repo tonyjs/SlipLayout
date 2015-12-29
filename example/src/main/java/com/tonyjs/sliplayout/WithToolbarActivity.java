@@ -1,18 +1,16 @@
 package com.tonyjs.sliplayout;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+
 import com.tonyjs.sliplayout.lib.MultiSlipScrollView;
-import com.tonyjs.sliplayout.lib.SlipLayout;
-import com.tonyjs.sliplayout.lib.SlipScrollView;
 
 
-public class WithToolbarActivity extends ActionBarActivity {
+public class WithToolbarActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

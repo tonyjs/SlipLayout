@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.tonyjs.sliplayout.R;
-import com.tonyjs.sliplayout.lib.SlipLayout;
 
 /**
  * Created by tony.park on 14. 11. 13..

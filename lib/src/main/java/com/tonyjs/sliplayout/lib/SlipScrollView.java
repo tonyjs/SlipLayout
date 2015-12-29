@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class SlipScrollView extends ScrollView {
     public interface OnScrollCallback {
-        public void onScroll(int amountOfScroll);
+        void onScroll(int amountOfScroll);
     }
 
     public SlipScrollView(Context context) {

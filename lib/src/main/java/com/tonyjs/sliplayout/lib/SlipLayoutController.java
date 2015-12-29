@@ -1,9 +1,7 @@
 package com.tonyjs.sliplayout.lib;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
@@ -16,44 +14,34 @@ public class SlipLayoutController
     public static final int DIRECTION_TO_UP = 0;
     public static final int DIRECTION_TO_BOTTOM = 1;
 
-    private Context mContext;
-    public SlipLayoutController(Context context) {
-        mContext = context;
-    }
+    private View mTargetView;
 
     private int mDirection = DIRECTION_TO_BOTTOM;
+    private int mLastScrollY = 0;
 
-    public void setDirection(int direction) {
+    private SlipLayoutController() {
+    }
+
+    public SlipLayoutController(View targetView) {
+        this(targetView, DIRECTION_TO_BOTTOM);
+    }
+
+    public SlipLayoutController(View targetView, int direction) {
+        mTargetView = targetView;
         mDirection = direction;
     }
 
-    protected SlipScrollView mScrollView;
-
-    public void setScrollView(SlipScrollView scrollView) {
-        mScrollView = scrollView;
-        mScrollView.setOnScrollCallback(this);
+    public void setScrollableView(SlipScrollView scrollView) {
+        scrollView.setOnScrollCallback(this);
     }
 
-    @Override
-    public void onScroll(int amountOfScroll) {
-        calculateAndSlipLayout(amountOfScroll);
+    public void setScrollableView(ListView listView) {
+        listView.setOnScrollListener(this);
     }
 
-    protected ListView mListView;
-
-    public void setListView(ListView listView) {
-        mListView = listView;
-        mListView.setOnScrollListener(this);
+    public void setScrollableView(RecyclerView recyclerView) {
+        recyclerView.addOnScrollListener(new RecyclerScrollListener());
     }
-
-    private RecyclerView mRecyclerView;
-
-    public void setRecyclerView(RecyclerView recyclerView) {
-        mRecyclerView = recyclerView;
-        mRecyclerView.setOnScrollListener(new RecyclerScrollListener());
-    }
-
-    protected View mTargetView;
 
     public void setTargetView(View view) {
         mTargetView = view;
@@ -61,6 +49,15 @@ public class SlipLayoutController
 
     public View getTargetView() {
         return mTargetView;
+    }
+
+    public void setDirection(int direction) {
+        mDirection = direction;
+    }
+
+    @Override
+    public void onScroll(int amountOfScroll) {
+        calculateAndSlipLayout(amountOfScroll);
     }
 
     @Override
@@ -74,16 +71,8 @@ public class SlipLayoutController
             return;
         }
 
-        int scroll = -firstView.getTop() + firstVisibleItem * firstView.getHeight();
+        int scrollY = -firstView.getTop() + firstVisibleItem * firstView.getHeight();
 
-        deliverScrollY(scroll);
-    }
-
-    protected int mLastScrollY = 0;
-    protected void deliverScrollY(int scrollY) {
-        if (mTargetView == null) {
-            return;
-        }
         if (mLastScrollY == 0) {
             mLastScrollY = scrollY;
         }
@@ -95,44 +84,23 @@ public class SlipLayoutController
         calculateAndSlipLayout(-amountOfScrollY);
     }
 
-    protected int mMargin = 0;
     protected void calculateAndSlipLayout(int amountOfScrollY) {
         if (amountOfScrollY == 0 || mTargetView == null) {
             return;
         }
 
-        int slipDistance = mTargetView.getHeight();
+        int targetViewHeight = mTargetView.getHeight();
 
-        if (Math.abs(amountOfScrollY) >= slipDistance) {
-            if (amountOfScrollY > 0) {
-                mMargin = 0;
-            } else {
-                mMargin = -slipDistance;
-            }
-        } else {
-            mMargin = mMargin + amountOfScrollY;
-            if (Math.abs(mMargin) >= slipDistance) {
-                if (mMargin > 0) {
-                    mMargin = 0;
-                } else {
-                    mMargin = -slipDistance;
-                }
-            } else {
-                if (mMargin > 0) {
-                    mMargin = 0;
-                }
-            }
-        }
+        boolean directionToBottom = mDirection == DIRECTION_TO_BOTTOM;
+        
+        float newTop = mTargetView.getTranslationY() +
+                (directionToBottom ? -amountOfScrollY : amountOfScrollY);
 
-        ViewGroup.MarginLayoutParams params =
-                (ViewGroup.MarginLayoutParams) mTargetView.getLayoutParams();
-        if (mDirection == DIRECTION_TO_BOTTOM) {
-            params.bottomMargin = mMargin;
-        } else {
-            params.topMargin = mMargin;
-        }
+        float translateY = directionToBottom
+                ? Math.min(targetViewHeight, Math.max(0, newTop))
+                : Math.min(0, Math.max(-targetViewHeight, newTop));
 
-        mTargetView.setLayoutParams(params);
+        mTargetView.setTranslationY(translateY);
     }
 
     public void showTargetView() {
@@ -140,24 +108,12 @@ public class SlipLayoutController
             return;
         }
 
-        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mTargetView.getLayoutParams();
-
-        if (mDirection == DIRECTION_TO_BOTTOM) {
-            lp.bottomMargin = 0;
-        } else {
-            lp.topMargin = 0;
-        }
-
-        mTargetView.setLayoutParams(lp);
+        mTargetView.setTranslationY(0);
     }
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
 
-    }
-
-    public int getPixelFromDp(float dp) {
-        return (int) (mContext.getResources().getDisplayMetrics().density * dp);
     }
 
     private class RecyclerScrollListener extends RecyclerView.OnScrollListener {
